@@ -126,7 +126,7 @@ public class player : MonoBehaviour
 
 
     }
-    private void Update()
+    private void Update()//1秒更新60次
     {
         move();
         Attack();
