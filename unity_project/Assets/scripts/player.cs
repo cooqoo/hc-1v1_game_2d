@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 public class player : MonoBehaviour
 {
-   //定義一個欄位
+    #region 欄位
+    //定義一個欄位
     [Range(1, 100)]
     public float speed = 1.5f;
     [Range(1f, 1000f)]
@@ -22,14 +23,17 @@ public class player : MonoBehaviour
     private Animator ani;
 
     private AudioSource aud;
-    
+
+    [Header("攻擊力"), Range(0, 300)]
+    public float attack = 50;
+
 
     //物理作用
     private Rigidbody2D r2d;
     private Transform tra;
-    
 
-
+    #endregion
+    #region 方法
     //定義方法 method
     //print輸出一個資訊(幾分幾秒做了什麼)
     //if判斷有沒有 如果...則...
@@ -77,6 +81,13 @@ public class player : MonoBehaviour
 
 
     }
+
+    #endregion
+    [Header("攻擊位置")]
+    public Transform pointATK;
+    [Header("攻擊長度"),Range(0,3)]
+    public float rangeATK = 1.5f;
+    #region 事件
     public void Jump()
     {
         if (Input.GetKeyDown(KeyCode.Space)&& isGround) 
@@ -87,10 +98,11 @@ public class player : MonoBehaviour
             aud.PlayOneShot(soundjump);
 
             r2d.AddForce(new Vector2(0, jump));
+
+
+            
         }
 
-
-        
 
 
     }
@@ -114,6 +126,8 @@ public class player : MonoBehaviour
             print("攻擊");
             ani.SetTrigger("New Trigger");
             aud.PlayOneShot(soundatk);
+            RaycastHit2D hit = Physics2D.Raycast(pointATK.position, pointATK.right, rangeATK,1 << 9);// 碰撞資訊=射線碰撞(中心點,方向,長度)
+            if(hit)hit.collider.GetComponent<enemy>().Damage(attack);
         }
     }
     
@@ -124,7 +138,7 @@ public class player : MonoBehaviour
         r2d = GetComponent<Rigidbody2D>();
         tra = GetComponent<Transform>();
 
-
+        pointATK = tra.GetChild(0); //抓到第一個子物件
     }
     private void Update()//1秒更新60次
     {
@@ -161,7 +175,13 @@ public class player : MonoBehaviour
             textCoin.text = "金幣:" + coin;
         }
     }
+    //繪製圖示(開發者才看得到)
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;//圖示.顏色 = 顏色.紅色
+        Gizmos.DrawRay(pointATK.position, pointATK.right * rangeATK);   //中心點，方向*長度 
+    }
+    #endregion
     
-        
-    
+
 }
